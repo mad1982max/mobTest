@@ -1,0 +1,38 @@
+.main {
+	transform: scale(8,-8) rotate(-28deg);
+	position: absolute;
+	top: 700px;
+}
+
+.layer {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+#svgObj1 {
+    z-index: 100;
+}
+
+h4 {
+    padding: 5px;
+}
+
+.own {
+    padding: 5px;
+    background: lightblue;
+}
+
+.another {
+    padding: 5px;
+    background: rgb(241, 123, 123);
+}
+
+#alert{
+    font-size: 14px;
+    color: red;
+}
+
+#wrapper {
+    background: #000;
+}
