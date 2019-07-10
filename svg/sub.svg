@@ -7,8 +7,14 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+<<<<<<< HEAD
    id="svg3"
    preserveAspectRatio="xMinYMin meet"
+=======
+   id="svg1"
+   width = "500" height = "900" viewBox = "15 10 70 70"
+   
+>>>>>>> da56a8be8c690bf7276f791f7a59d291e32d7def
    version="1.1"
    sodipodi:docname="sub.svg"
    inkscape:version="0.92.4 (33fec40, 2019-01-16)">

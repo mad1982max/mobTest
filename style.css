@@ -1,13 +1,7 @@
 .main {
-	transform: scale(8,-8) rotate(-28deg);
 	position: absolute;
-	top: 700px;
-}
-
-.layer {
-    position: absolute;
-    top: 0px;
-    left: 0px;
+    top: 50px;
+    left: 450px;
 }
 
 #svgObj1 {
@@ -33,6 +27,7 @@ h4 {
     color: red;
 }
 
-#wrapper {
-    background: #000;
+object {
+    /* border: 2px solid rgb(151, 153, 151); */
 }
+
