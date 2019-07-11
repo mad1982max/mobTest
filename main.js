@@ -1,4 +1,6 @@
 window.onload = () => {
+    
+    let zoom = 1;
     let currentUser = '01';
 
     let totalRooms = ['product-04-X06-C','product-04-X06-D','product-04-X03-C','product-04-Y04-D','product-04-Y04-C','product-04-Y06-D','product-04-Y06-C','product-04-Y05-Ha','product-04-Y06-H','product-04-Y06-G','product-04-Y09-D','product-04-Y09-C','product-04-Y11-D','product-04-Y11-C','product-04-Y13-D','product-04-Y13-C','product-04-X13-D','product-04-X13-C','product-04-X-11-I','product-04-X11-C','product-04-X09-C','product-04-X09-D','product-04-X07-G', 'product-04-X11-D', 'product-04-X03-D', 'product-04-Y09-I', 'product-04-Y06-I'];
@@ -31,7 +33,6 @@ window.onload = () => {
     ];
 
     let freeRooms = totalRooms.diff(bookedSquaresArr.map(val => val.roomId));
-    console.log('freeRooms', freeRooms);
 
     let currentUserColor = 'blue';
     let freeRoomsColor = 'green';
@@ -45,6 +46,7 @@ window.onload = () => {
     let bookedByCurrent = document.getElementById("bookedByCurrent");
     let bookedByAnother = document.getElementById("bookedByAnother");
     let alert = document.getElementById("alert");
+    
     svgInn.addEventListener("click", click);
 
     showBookedSquares();
@@ -96,7 +98,7 @@ window.onload = () => {
         })
         return {index, isBookedByCurrentUser}
     }
-
+//-----------------Click on cell---------------------------
     function click(e) {
         let squareId = e.target.parentElement.id;
         showCurrentSquare(squareId);
@@ -124,56 +126,197 @@ window.onload = () => {
         }
         showBookedSquares();
     }
-//---------------------------------------------------------
+
+//---------------Pointer------------------------
         svgInn.addEventListener('mousemove', function(event) {
         pointer.innerHTML = event.clientX + ' : ' + event.clientY;
     });
-//---------------------------------------------------------    
-    zoom();
-    function zoom () {
-        let panZoomInstance = svgPanZoom(svgInn, {
-        zoomEnabled: true,
-        controlIconsEnabled: true,
-        preventMouseEventsDefault: true,
-        dblClickZoomEnabled: true,
-        refreshRate: 'auto',
-        beforeZoom: function(){console.log('beforeZoom')},
-        onZoom: function(){console.log('onZoom')},
-        beforePan: function(){console.log('beforePan')},
-        onPan: function(){console.log('onPan')},
-        onUpdatedCTM: function(){console.log('onUpdatedCTM')},
+//---------------ZOOM------------------------
+    svgInn.onwheel = ZoomInOut;
 
-        fit: true,
-        center: true,
-        minZoom: 0.5,
-        maxZoom: 10,
-        });
+    function ZoomInOut(e) {
+        let [x, y, w, h] = svgInn.getAttribute('viewBox').split(' ');
 
-        panZoomInstance.zoom(1)
+        let zoomStep = 1.5;
+
+        if(e.deltaY > 0) {
+            x -= e.clientX / 550 * (w * zoomStep - w);
+            y -= e.clientY / 900 * (h * zoomStep - h);
+            w *= zoomStep;
+            h *= zoomStep;
+            zoom *= zoomStep;
+
+        } else {
+
+            x -= e.clientX / 550 * (w / zoomStep - w);
+            y -= e.clientY / 900 * (h / zoomStep - h);
+            w /= zoomStep;
+            h /= zoomStep;
+            zoom /= zoomStep;
+        }
+        
+        let newData = `${+x} ${+y} ${+w} ${+h}`;
+        svgInn.setAttribute('viewBox', newData);
+        console.log(zoom)
+    }
+
+    //---------------PAN------------------------
+
+    if (window.PointerEvent) {
+        svgInn.addEventListener('pointerdown', onPointerDown);
+        svgInn.addEventListener('pointerup', onPointerUp);
+        svgInn.addEventListener('pointerleave', onPointerUp);
+        svgInn.addEventListener('pointermove', onPointerMove);
+    } else {
+    svgInn.addEventListener('mousedown', onPointerDown);
+    svgInn.addEventListener('mouseup', onPointerUp);
+    svgInn.addEventListener('mouseleave', onPointerUp);
+    svgInn.addEventListener('mousemove', onPointerMove);
+
+    svgInn.addEventListener('touchstart', onPointerDown);
+    svgInn.addEventListener('touchend', onPointerUp);
+    svgInn.addEventListener('touchmove', onPointerMove);
+    }
+
+    let point = svgInn.createSVGPoint();
+    function getPointFromEvent (event) {
+    
+    if (event.targetTouches) {
+        point.x = event.targetTouches[0].clientX;
+        point.y = event.targetTouches[0].clientY;
+    } else {
+        point.x = event.clientX;
+        point.y = event.clientY;
+    }    
+    
+    let invertedSVGMatrix = svgInn.getScreenCTM().inverse();    
+    return point.matrixTransform(invertedSVGMatrix);
+    }
+
+    let isPointerDown = false;
+    let pointerOrigin;
+
+    function onPointerDown(event) {
+    isPointerDown = true;  
+    
+    pointerOrigin = getPointFromEvent(event);
+    }
+
+    let viewBox = svgInn.viewBox.baseVal;
+
+    function onPointerMove (event) {
+    
+    if (!isPointerDown) {
+        return;
+    }
+    
+    event.preventDefault();
+
+    let pointerPosition = getPointFromEvent(event);
+    
+    viewBox.x -= (pointerPosition.x - pointerOrigin.x);
+    viewBox.y -= (pointerPosition.y - pointerOrigin.y);
+    }
+
+    function onPointerUp() {
+    isPointerDown = false;
+    }
+
+
+//////////////////// For test
+
+
+    let obj1 = document.getElementById("svgObj2");
+    let svgDocument1 = obj1.contentDocument;
+    let svgInn1 = svgDocument1.getElementById("svg2");
+
+    //---------------ZOOM------------------------
+
+    svgInn1.onwheel = ZoomInOut2;
+
+    function ZoomInOut2(e) {
+        let [x, y, w, h] = svgInn1.getAttribute('viewBox').split(' ');
+
+        let zoomStep = 1.5;
+
+        if(e.deltaY > 0) {
+            x -= e.clientX / 550 * (w * zoomStep - w);
+            y -= e.clientY / 900 * (h * zoomStep - h);
+            w *= zoomStep;
+            h *= zoomStep;
+
+        } else {
+
+            x -= e.clientX / 550 * (w / zoomStep - w);
+            y -= e.clientY / 900 * (h / zoomStep - h);
+            w /= zoomStep;
+            h /= zoomStep;
+            zoom /= zoomStep;
+        }
+        
+        let newData = `${+x} ${+y} ${+w} ${+h}`;
+        svgInn1.setAttribute('viewBox', newData);
+    }
+
+    //---------------PAN------------------------
+
+    if (window.PointerEvent) {
+        svgInn1.addEventListener('pointerdown', onPointerDown2);
+        svgInn1.addEventListener('pointerup', onPointerUp2);
+        svgInn1.addEventListener('pointerleave', onPointerUp2);
+        svgInn1.addEventListener('pointermove', onPointerMove2);
+    } else {
+    svgInn1.addEventListener('mousedown', onPointerDown2);
+    svgInn1.addEventListener('mouseup', onPointerUp2);
+    svgInn1.addEventListener('mouseleave', onPointerUp2);
+    svgInn1.addEventListener('mousemove', onPointerMove2);
+
+    svgInn1.addEventListener('touchstart', onPointerDown2);
+    svgInn1.addEventListener('touchend', onPointerUp2);
+    svgInn1.addEventListener('touchmove', onPointerMove2);
+    }
+
+    let point1 = svgInn1.createSVGPoint();
+    function getPointFromEvent2 (event) {
+    
+    if (event.targetTouches) {
+        point1.x = event.targetTouches[0].clientX;
+        point1.y = event.targetTouches[0].clientY;
+    } else {
+        point1.x = event.clientX;
+        point1.y = event.clientY;
+    }    
+    
+    let invertedSVGMatrix1 = svgInn1.getScreenCTM().inverse();    
+    return point1.matrixTransform(invertedSVGMatrix1);
+    }
+
+    let isPointerDown1 = false;
+    let pointerOrigin1;
+
+    function onPointerDown2(event) {
+    isPointerDown1 = true;  
+    
+    pointerOrigin1 = getPointFromEvent2(event);
+    }
+
+    let viewBox1 = svgInn1.viewBox.baseVal;
+
+    function onPointerMove2 (event) {
+    
+    if (!isPointerDown1) {
+        return;
+    }
+    
+    event.preventDefault();
+
+    let pointerPosition = getPointFromEvent2(event);
+    
+    viewBox1.x -= (pointerPosition.x - pointerOrigin1.x);
+    viewBox1.y -= (pointerPosition.y - pointerOrigin1.y);
+    }
+
+    function onPointerUp2() {
+    isPointerDown1 = false;
     }
 }
-//-----ZOOM--------------------
-
-    // svgInn.onwheel = f;
-
-    // function f(e) {
-    //     console.log(e.deltaY);
-    //     console.log(e.clientX, e.clientY);
-    //     let [x, y, w, h] = svgInn.getAttribute('viewBox').split(' ');
-    //     console.log(x, y, w, h);
-
-    //     let pace = 40;
-    //     let direction = e.deltaY > 0 ? pace: -pace;
-        
-    //     let sm = e.deltaY > 0 ? 3: -3;
-    //     let n = w/(+w + direction);
-    //     let cor = n*pace;
-    //     let dirCor = e.deltaY > 0 ? cor: -cor;
-    //     console.log('***', n, cor);
-
-    //     let newData = `${+x-dirCor} ${+y-dirCor} ${+w + direction} ${+h + direction}`;
-    //     console.log(newData)
-    //     svgInn.setAttribute('viewBox', newData);
-    //     svgInn5.setAttribute('viewBox', newData)
-
-    // }

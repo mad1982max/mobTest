@@ -1,4 +1,10 @@
-<svg id = "svg1"  width = "500" height = "750" viewBox = "0 20 80 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg 
+    id = "svg1"  
+    width = "500" 
+    height = "750" 
+    viewBox = "0 20 80 100" 
+    xmlns="http://www.w3.org/2000/svg" 
+    xmlns:xlink="http://www.w3.org/1999/xlink">
     <g id="storey-U3">
         <g id="product-U3-Y03-D">
         </g>
