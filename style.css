@@ -1,7 +1,7 @@
 .main {
 	position: absolute;
-    top: 50px;
-    left: 450px;
+    top: 10px;
+    left: 400px;
 }
 
 #svgObj1 {
@@ -29,4 +29,17 @@ h4 {
 
 object {
     border: 2px solid rgb(151, 153, 151);
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+#pointer {
+  animation: fade-in 1s ease;
 }

@@ -1,9 +1,10 @@
 window.onload = () => {
     
+    
     let zoom = 1;
     let currentUser = '01';
 
-    let totalRooms = ['product-04-X06-C','product-04-X06-D','product-04-X03-C','product-04-Y04-D','product-04-Y04-C','product-04-Y06-D','product-04-Y06-C','product-04-Y05-Ha','product-04-Y06-H','product-04-Y06-G','product-04-Y09-D','product-04-Y09-C','product-04-Y11-D','product-04-Y11-C','product-04-Y13-D','product-04-Y13-C','product-04-X13-D','product-04-X13-C','product-04-X-11-I','product-04-X11-C','product-04-X09-C','product-04-X09-D','product-04-X07-G', 'product-04-X11-D', 'product-04-X03-D', 'product-04-Y09-I', 'product-04-Y06-I'];
+    let totalRooms = ['product-04-X06-C','product-04-X06-D','product-04-X03-C','product-04-Y04-D','product-04-Y04-C','product-04-Y06-D','product-04-Y06-C','product-04-Y06-H','product-04-Y06-G','product-04-Y09-D','product-04-Y09-C','product-04-Y11-D','product-04-Y11-C','product-04-Y13-D','product-04-Y13-C','product-04-X13-D','product-04-X13-C','product-04-X-11-I','product-04-X11-C','product-04-X09-C','product-04-X09-D','product-04-X07-G', 'product-04-X11-D', 'product-04-X03-D', 'product-04-Y09-I', 'product-04-Y06-I'];
 
     Array.prototype.diff = function(a) {
         return this.filter(function(i) {return a.indexOf(i) < 0;});
@@ -38,9 +39,14 @@ window.onload = () => {
     let freeRoomsColor = 'green';
     let bookedAnotherUserColor = 'red';
 
+    let zoomStepView = document.getElementById("zoom");
+    let pointerView = document.getElementById('pointerView')
+
     let obj = document.getElementById("svgObj1");
     let svgDocument = obj.contentDocument;
     let svgInn = svgDocument.getElementById("svg1");
+
+    let pointer = svgDocument.getElementById('pointer');
 
     let roomNo = document.getElementById("roomNo");
     let bookedByCurrent = document.getElementById("bookedByCurrent");
@@ -129,35 +135,53 @@ window.onload = () => {
 
 //---------------Pointer------------------------
         svgInn.addEventListener('mousemove', function(event) {
-        pointer.innerHTML = event.clientX + ' : ' + event.clientY;
+        pointerView.innerHTML = event.clientX + ' : ' + event.clientY;
     });
 //---------------ZOOM------------------------
     svgInn.onwheel = ZoomInOut;
 
     function ZoomInOut(e) {
+        let wBox = svgInn.getAttribute('width');
+        let hBox = svgInn.getAttribute('height');
+        console.log(hBox, wBox);
         let [x, y, w, h] = svgInn.getAttribute('viewBox').split(' ');
 
         let zoomStep = 1.5;
 
         if(e.deltaY > 0) {
-            x -= e.clientX / 550 * (w * zoomStep - w);
-            y -= e.clientY / 900 * (h * zoomStep - h);
+            x -= e.clientX / wBox * (w * zoomStep - w);
+            y -= e.clientY / hBox * (h * zoomStep - h);
             w *= zoomStep;
             h *= zoomStep;
             zoom *= zoomStep;
 
         } else {
 
-            x -= e.clientX / 550 * (w / zoomStep - w);
-            y -= e.clientY / 900 * (h / zoomStep - h);
+            x -= e.clientX / wBox * (w / zoomStep - w);
+            y -= e.clientY / hBox * (h / zoomStep - h);
             w /= zoomStep;
             h /= zoomStep;
             zoom /= zoomStep;
+            
         }
-        
+        zoomStepView.innerText = zoom;
         let newData = `${+x} ${+y} ${+w} ${+h}`;
         svgInn.setAttribute('viewBox', newData);
-        console.log(zoom)
+        console.log(zoom);
+
+        
+
+        if(zoom < 0.7) {
+            console.log('show temperature');
+            console.log(pointer.getAttribute('style'));
+            pointer.setAttribute('style', 'opacity:1');
+            console.log(pointer.getAttribute('style'));
+        } else {
+            console.log('hide temperature');
+            console.log(pointer.getAttribute('style'));
+            pointer.setAttribute('style', 'opacity:0');
+            console.log(pointer.getAttribute('style'));
+        }
     }
 
     //---------------PAN------------------------
