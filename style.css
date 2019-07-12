@@ -1,3 +1,6 @@
+body {
+    overflow: hidden;
+}
 .main {
 	position: absolute;
     top: 10px;
